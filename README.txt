@@ -1,0 +1,1 @@
+Day planner application for organizing tasks.
