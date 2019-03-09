@@ -1,5 +1,6 @@
 package DayPlaner;
 
+import java.security.SecureRandom;
 import java.util.Calendar;
 
 public class Event {
@@ -7,8 +8,12 @@ public class Event {
     private String dateAndTimeOfCreation;
     private String Durations;
     private String Description;
+    private String uniqueID; // unique id will be handled by frontend no need to be human readable
     private java.util.TimeZone tz = java.util.TimeZone.getTimeZone("GMT+2");
     private java.util.Calendar c = java.util.Calendar.getInstance(tz);
+
+    private volatile SecureRandom numberGenerator = null;
+    private final long MSB = 0x8000000000000000L;
 
 
     public Event(String eventTitle, String durations, String description) {
@@ -16,6 +21,7 @@ public class Event {
         Description = description;
         this.dateAndTimeOfCreation = getCurrentTime();
         Durations = durations;
+        uniqueID = unique();
     }
 
     public String getEventTitle() {
@@ -56,5 +62,15 @@ public class Event {
                 c.get(java.util.Calendar.HOUR_OF_DAY)+":"+
                 c.get(java.util.Calendar.MINUTE)+":"+
                 c.get(java.util.Calendar.SECOND);
+    }
+    public String unique() {
+        SecureRandom ng = numberGenerator;
+        if (ng == null) {
+            numberGenerator = ng = new SecureRandom();
+        }
+        return Long.toHexString(MSB | ng.nextLong()) + Long.toHexString(MSB | ng.nextLong());
+}
+    public String getUniqueID() {
+        return uniqueID;
     }
 }
